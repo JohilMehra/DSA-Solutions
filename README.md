@@ -16,7 +16,7 @@ Later, solutions will be reorganized topic-wise (Arrays, DP, Graphs, etc.) for b
 ---
 
 ## 🛠 Language Used
-- C++ / Java / Python *(edit this based on your language)*
+- Java
 
 ---
 
