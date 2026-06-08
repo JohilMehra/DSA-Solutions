@@ -22,10 +22,11 @@ class Solution {
         return ans;
     }
 
-    private static int findDivisor(int[] nums,int mid){
+    private static int findDivisor(int[] nums,int div){
         int count=0;
-        for(int i=0;i<nums.length;i++){
-            count+= (int)Math.ceil((double)nums[i]/mid);
+        for(int num : nums){
+            // count+= (int)Math.ceil((double)nums[i]/mid);
+            count += (num + div - 1) / div;
         }
         return count;
     }
