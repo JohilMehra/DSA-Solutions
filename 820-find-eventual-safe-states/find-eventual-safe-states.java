@@ -1,42 +1,47 @@
 class Solution {
+    //1.reverse edges
+    //2.add nodes having indegree 0 & perform toposort 
+
     public List<Integer> eventualSafeNodes(int[][] graph) {
         int n=graph.length;
-        List<List<Integer>> revGraph=new ArrayList<>();
+        ArrayList<Integer> ngraph[] = new ArrayList[n];
         for(int i=0;i<n;i++){
-            revGraph.add(new ArrayList<>());
+            ngraph[i]=new ArrayList<>();
         }
-        int[] outdeg=new int[n];
+
+        int []indegree = new int[n];
         for(int i=0;i<n;i++){
-            outdeg[i]=graph[i].length;
-            for(Integer neig: graph[i]){
-                revGraph.get(neig).add(i);
+            //we are storing in reverse order
+            for(int j=0;j<graph[i].length;j++){
+                int v=graph[i][j];
+                ngraph[v].add(i);
+
+                indegree[i]++;
             }
         }
+
+        List<Integer> res = new ArrayList<>();
         Queue<Integer> q=new LinkedList<>();
+
         for(int i=0;i<n;i++){
-            if(outdeg[i]==0){
+            if(indegree[i]==0){
                 q.offer(i);
             }
         }
-        boolean[] safe=new boolean[n];
 
         while(!q.isEmpty()){
-            int curr=q.poll();
-            safe[curr]=true;
+            int curr = q.poll();
+            res.add(curr);
 
-            for(int parent : revGraph.get(curr)){
-                outdeg[parent]--;
-
-                if(outdeg[parent]==0){
-                    q.offer(parent);
+            for(Integer it : ngraph[curr]){
+                indegree[it]--;
+                if(indegree[it]==0){
+                    q.offer(it);
                 }
             }
         }
 
-        List<Integer> res=new ArrayList<>();
-        for(int i=0;i<n;i++){
-            if(safe[i]) res.add(i);
-        }
+        Collections.sort(res);
         return res;
     }
 }
