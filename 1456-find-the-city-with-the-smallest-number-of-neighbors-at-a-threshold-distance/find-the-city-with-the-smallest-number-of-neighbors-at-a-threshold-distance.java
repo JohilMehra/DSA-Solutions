@@ -1,56 +1,55 @@
 class Solution {
     public int findTheCity(int n, int[][] edges, int distanceThreshold) {
-        List<List<int[]>> adj=new ArrayList<>();
-
+        //1.create n*n matrix for storing distance
+        int dist[][] = new int[n][n];
+        //fill cells with infinite : in case route is not availble
         for(int i=0;i<n;i++){
-            adj.add(new ArrayList<>());
+            for(int j=0;j<n;j++){
+                dist[i][j]=Integer.MAX_VALUE;
+            }
         }
-        //build adjancency list
-        for(int[] e:edges){
-            int u=e[0];
-            int v=e[1];
-            int w=e[2];
-
-            adj.get(u).add(new int[]{v,w});
-            adj.get(v).add(new int[]{u,w});
+        for(int e[] : edges){
+            int u=e[0],v=e[1],wt=e[2];
+            // bi-directional edges
+            dist[u][v]=wt;
+            dist[v][u]=wt;
         }
-        int finalcity=-1;
-        int min=Integer.MAX_VALUE;
-        //dijkstra
-        for(int i=0;i<n;i++){
-            int[] dist=new int[n];
-            Arrays.fill(dist,Integer.MAX_VALUE);
+        
+        //2.diagonal distance be 0 like dist from 0 -> 0 = 0
+        for(int i=0;i<n;i++) dist[i][i]=0;
 
-            PriorityQueue<int[]> pq=new PriorityQueue<>((a,b) -> a[0]-b[0]);
-            pq.offer(new int[]{0,i});
-            dist[i]=0;
-
-            while(!pq.isEmpty()){
-                int[] curr=pq.poll();
-                int distance=curr[0];
-                int node=curr[1];
-
-                for(int[] neig:adj.get(node)){
-                    int nextNode=neig[0];
-                    int weight=neig[1];
-
-                    if(distance+weight<dist[nextNode]){
-                        dist[nextNode]=distance+weight;
-                        pq.offer(new int[]{dist[nextNode],nextNode});
+        //3.now perform floyd_warshall algorithm
+        //try with every city via and reach other city with min distance
+        for(int k=0;k<n;k++){
+            for(int i=0;i<n;i++){
+                for(int j=0;j<n;j++){
+                    //only if it is possible/minimum then infinity
+                    if(dist[i][k] != Integer.MAX_VALUE && dist[k][j] != Integer.MAX_VALUE){
+                        dist[i][j]=Math.min(dist[i][j] , dist[i][k] + dist[k][j]);
                     }
                 }
             }
-            int count=0;
-            for(int j=0;j<n;j++){
-                if(j!=i && dist[j]<=distanceThreshold){
-                    count++;
+        }
+
+        int cntCity=n; //initialize with max no of cities &we have to find minimum
+        int cityNo=-1; //stores starting point/city
+
+        for(int city=0;city<n;city++){
+            //make every city as starting pnt one by one 
+            int cnt=0;
+            for(int adjCity=0; adjCity<n; adjCity++){
+                //if it dist <= thresold then cnt++
+                if(dist[city][adjCity] <= distanceThreshold){
+                    cnt++;
                 }
             }
-            if(count<=min){
-                min=count;
-                finalcity=i;
+
+            if(cnt <= cntCity){
+                //if found min
+                cntCity = cnt;
+                cityNo = city;//if two cities have min values then take the highest city number that is why cnt <= cntCity ,it stores the greater city
             }
         }
-        return finalcity;
+        return cityNo;
     }
 }
