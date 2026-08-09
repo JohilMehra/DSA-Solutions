@@ -1,10 +1,36 @@
 class Solution {
     public int numDistinct(String s, String t) {
         int n=s.length(),m=t.length();
-        int [][]dp = new int[n][m];
-        for(int []row : dp) Arrays.fill(row,-1);
+        // ------ Memoization technique ------
+        // int [][]dp = new int[n][m];
+        // for(int []row : dp) Arrays.fill(row,-1);
 
-        return find(n-1,m-1,s,t,dp);
+        // return find(n-1,m-1,s,t,dp);
+
+        // ------- Tabulation Technique -------
+
+        int dp[][] = new int[n+1][m+1]; //(1-base indicing)
+        //basecases 
+        //1.if j==0 means we got the substring -> +1
+        for(int i=0;i<=n;i++) dp[i][0] = 1;
+        //2.if i==0 and j>0 means we didn't found -> 0
+        for(int j=1;j<=m;j++) dp[0][j] = 0;
+
+        for(int i=1;i<n+1;i++){
+            for(int j=1;j<m+1;j++){
+                //if matches
+                if(s.charAt(i-1) == t.charAt(j-1)){
+                    int take = dp[i-1][j-1];
+                    int notake = dp[i-1][j];
+                    dp[i][j] = take + notake;
+                }
+                //if not matches
+                else{
+                    dp[i][j] = dp[i-1][j]; //dont take
+                }
+            }
+        }
+        return dp[n][m];
     }
 
     //memoization method
@@ -24,7 +50,7 @@ class Solution {
             int notake = find(i-1,j,s,t,dp);
 
             return dp[i][j] = take + notake;
-            
+
         }else{
             //if not matches -> don't take
             return dp[i][j] = find(i-1,j,s,t,dp);
