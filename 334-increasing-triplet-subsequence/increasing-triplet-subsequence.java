@@ -1,28 +1,19 @@
 class Solution {
-    //same lIS , in last check wheather len >= 3 or not
-    public boolean increasingTriplet(int[] arr) {
-        int []tail = new int[arr.length];
-        tail[0]=arr[0];
-        int len=1;
-        
-        for(int i=1;i<arr.length;i++){
-            if(arr[i]>tail[len-1]){
-                len++;
-                tail[len-1]=arr[i];
+    public boolean increasingTriplet(int[] nums) {
+        int first = Integer.MAX_VALUE;
+        int sec = Integer.MAX_VALUE;
+
+        for(int num : nums){
+            if(num <= first){
+                first = num;
+            }else if(num <= sec){
+                sec = num;
             }else{
-                //binary search and find lower bound
-                int left = 0, right=len;
-                while(left<right){
-                    int mid = left+(right-left)/2;
-                    if(tail[mid]<arr[i]){
-                        left=mid+1;
-                    }else{
-                        right=mid;
-                    }
-                }
-                tail[left]=arr[i];
+                //if found already 2 ele less than the curr ele
+                //this is the third ele -> contains such 3 elements based on condition
+                return true;
             }
         }
-        return len >= 3;
+        return false;
     }
 }
